@@ -9,6 +9,7 @@ on:
   push:
     branches:
       - master
+      - v3-dev
       - staging
       - trying
 jobs:
@@ -48,9 +49,14 @@ jobs:
       - uses: julia-actions/julia-runtest@v1
         env:
           COMPATHELPER_RUN_INTEGRATION_TESTS: "true"
-          COMPATHELPER_INTEGRATION_TEST_REPO: "bcbi-test/compathelper_integration_test_repo.jl"
-          BCBI_TEST_USER_GITHUB_TOKEN: ${{ secrets.BCBI_TEST_USER_GITHUB_TOKEN }}
-          COMPATHELPER_PRIV: ${{ secrets.BCBI_TEST_COMPATHELPER_PRIV }}
+
+          INTEGRATION_TEST_REPO_GITHUB: "bcbi-test/compathelper_integration_test_repo.jl"
+          INTEGRATION_PAT_GITHUB: ${{ secrets.INTEGRATION_PAT_GITHUB }}
+          INTEGRATION_REPO_SSH_KEY_GITHUB: ${{ secrets.INTEGRATION_REPO_SSH_KEY_GITHUB }}
+
+          INTEGRATION_TEST_REPO_GITLAB: "InveniaBot/compathelper_integration_test_repo.jl"
+          INTEGRATION_PAT_GITLAB: ${{ secrets.INTEGRATION_PAT_GITLAB }}
+          INTEGRATION_REPO_SSH_KEY_GITLAB: ${{ secrets.INTEGRATION_REPO_SSH_KEY_GITLAB }}
       - uses: julia-actions/julia-processcoverage@v1
       - uses: codecov/codecov-action@v1
         with:

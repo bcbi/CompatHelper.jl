@@ -1,0 +1,13 @@
+name = "Foobar"
+uuid = "deac9b47-8bc7-5906-a0fe-35ac56dc84c0"
+version = "1.0.0"
+
+[deps]
+Foobar_jll = "6ca821de-e512-569d-89d9-0b16ce691416"
+Baz = "ea10d353-3f73-51f8-a26c-33c1cb351aa5"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+
+[compat]
+Foobar_jll = "1"
+Baz = "2"
+julia = "1.6"

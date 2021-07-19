@@ -14,15 +14,13 @@ makedocs(;
         assets=String[],
     ),
     pages=[
-        "Home"                                => "index.md",
-        "Configuration Options"               => "options.md",
-        "Troubleshooting"                     => "troubleshooting.md",
+        "Home" => "index.md",
+        "Configuration Options" => "options.md",
+        "Troubleshooting" => "troubleshooting.md",
         "Self-Hosting and Other Environments" => "other-environments.md",
-        "Acknowledgements"                    => "acknowledgements.md",
+        "Acknowledgements" => "acknowledgements.md",
     ],
     strict=true,
 )
 
-deploydocs(;
-    repo="github.com/JuliaRegistries/CompatHelper.jl",
-)
+deploydocs(; repo="github.com/JuliaRegistries/CompatHelper.jl")

@@ -1,6 +1,7 @@
 name = "compathelper_integration_test_repo"
 uuid = "0e97b93d-f6aa-40c8-b749-d2f6bf239ed7"
 authors = ["Brown Center for Biomedical Informatics"]
+description = "Test Project.toml with dependencies, compat entries; major ver, ~"
 version = "0.1.0"
 
 [deps]

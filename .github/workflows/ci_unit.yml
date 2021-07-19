@@ -3,9 +3,11 @@ on:
   pull_request:
     branches:
       - master
+      - v3-dev
   push:
     branches:
       - master
+      - v3-dev
       - staging
       - trying
     tags: '*'

@@ -1,0 +1,120 @@
+name: Git branch checks
+on:
+  pull_request:
+    branches:
+      - v3-dev
+  push:
+    branches:
+      - v3-dev
+      - staging
+      - trying
+  workflow_dispatch:
+jobs:
+  master_into_head:
+    name: master_into_head
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0' # Fetch all history for all tags and branches
+      - run: git config --global user.email "nobody@example.com"
+      - run: git config --global user.name "GitHub Actions"
+      - run: git fetch --all
+      - name: Test that there are no merge conflicts when merging master into HEAD
+        run: |
+          import Test
+
+          function get_process_output(cmd::Cmd)
+              buffer_stdout = IOBuffer()
+              buffer_stderr = IOBuffer()
+              p = pipeline(
+                  cmd;
+                  stdin = Base.devnull,
+                  stdout = buffer_stdout,
+                  stderr = buffer_stderr,
+              )
+              process = run(p; wait = false)
+              wait(process)
+              output_stdout = String(take!(buffer_stdout))
+              output_stderr = String(take!(buffer_stderr))
+              println("### BEGIN stdout")
+              println()
+              println(output_stdout)
+              println()
+              println("### END stdout")
+              println("### BEGIN stderr")
+              println()
+              println(output_stderr)
+              println()
+              println("### END stderr")
+              return (; process, output_stdout, output_stderr)
+          end
+
+          run(`git fetch --all`)
+          cmd = `git merge --no-commit --no-ff origin/master`
+          process, output_stdout, output_stderr = get_process_output(cmd)
+
+          Test.@testset begin
+              Test.@test (output_stdout == "Already up to date.\n") || (output_stderr == "Automatic merge went well; stopped before committing as requested\n")
+              Test.@test success(process)
+          end
+        shell: julia --color=yes {0}
+
+  head_into_master:
+    name: head_into_master
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0' # Fetch all history for all tags and branches
+      - run: git config --global user.email "nobody@example.com"
+      - run: git config --global user.name "GitHub Actions"
+      - run: git fetch --all
+      - name: Test that there are no merge conflicts when merging HEAD into master
+        run: |
+          import Test
+
+          function get_process_output(cmd::Cmd)
+              buffer_stdout = IOBuffer()
+              buffer_stderr = IOBuffer()
+              p = pipeline(
+                  cmd;
+                  stdin = Base.devnull,
+                  stdout = buffer_stdout,
+                  stderr = buffer_stderr,
+              )
+              process = run(p; wait = false)
+              wait(process)
+              output_stdout = String(take!(buffer_stdout))
+              output_stderr = String(take!(buffer_stderr))
+              println("### BEGIN stdout")
+              println()
+              println(output_stdout)
+              println()
+              println("### END stdout")
+              println("### BEGIN stderr")
+              println()
+              println(output_stderr)
+              println()
+              println("### END stderr")
+              return (; process, output_stdout, output_stderr)
+          end
+          run(`git checkout -B MY_BRANCH HEAD`)
+          Test.@test strip(read(`git rev-parse --abbrev-ref HEAD`, String)) == "MY_BRANCH"
+
+          run(`git fetch --all`)
+          run(`git checkout -B master origin/master`)
+          Test.@test strip(read(`git rev-parse --abbrev-ref HEAD`, String)) == "master"
+
+          cmd = `git merge --no-commit --no-ff MY_BRANCH`
+          process, output_stdout, output_stderr = get_process_output(cmd)
+
+          Test.@testset begin
+              Test.@test (output_stdout == "Already up to date.\n") || (output_stderr == "Automatic merge went well; stopped before committing as requested\n")
+              Test.@test success(process)
+          end
+        shell: julia --color=yes {0}

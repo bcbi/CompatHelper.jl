@@ -13,6 +13,8 @@ status = [
     "codecov/patch",
     "codecov/project",
     "codecov/project/minimum",
+    "head_into_master",
+    "master_into_head",
 ]
 
 timeout_sec = 1800

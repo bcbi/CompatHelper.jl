@@ -1,32 +1,39 @@
 module CompatHelper
 
-import Base64
-import Dates
-import GitHub
-import HTTP
-import Pkg
-import Printf
-import TOML
-import TimeZones
-import UUIDs
+using Base64: Base64
+using Dates: Dates
+using GitForge: GitForge, Forge, GitHub, GitLab
+using MultilineStrings
+using Mocking: Mocking, @mock
+using Pkg: Pkg
+using TimeZones: TimeZones
+using TOML: TOML
+using UUIDs: UUIDs, UUID
 
-include("types.jl")
+export DropEntry, KeepEntry, NewEntry
+
+@static if Base.VERSION >= v"1.7-"
+    const VersionSpec = Pkg.Versions.VersionSpec
+    const semver_spec = Pkg.Versions.semver_spec
+else
+    const VersionSpec = Pkg.Types.VersionSpec
+    const semver_spec = Pkg.Types.semver_spec
+end
+
+const PRIVATE_SSH_ENVVAR = "COMPATHELPER_PRIV"
+
+include(joinpath("utilities", "types.jl"))
+include(joinpath("utilities", "utilities.jl"))
+include(joinpath("utilities", "ci.jl"))
+include(joinpath("utilities", "rate_limiting.jl"))
+include(joinpath("utilities", "git.jl"))
+include(joinpath("utilities", "ssh.jl"))
+include(joinpath("utilities", "timestamps.jl"))
+include(joinpath("utilities", "new_versions.jl"))
 
 include("main.jl")
-
-include("api_rate_limiting.jl")
-include("assert.jl")
-include("ci_service.jl")
-include("envdict.jl")
-include("get_latest_version_from_registries.jl")
-include("get_project_deps.jl")
-include("git.jl")
-include("new_versions.jl")
+include("exceptions.jl")
+include("dependencies.jl")
 include("pull_requests.jl")
-include("ssh_keys.jl")
-include("stdlib.jl")
-include("timestamps.jl")
-include("utils.jl")
-include("version_numbers.jl")
 
 end # module
