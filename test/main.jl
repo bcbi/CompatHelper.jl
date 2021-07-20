@@ -1,8 +1,6 @@
 @testset "main.jl" begin
     @testset "unknown ci config" begin
         struct MockCI <: CompatHelper.CIService end
-        CompatHelper.api_hostname(::MockCI) = ""
-        CompatHelper.clone_hostname(::MockCI) = ""
 
         @test_throws ErrorException("Unknown CI Config: MockCI") CompatHelper.main(
             ENV, MockCI()

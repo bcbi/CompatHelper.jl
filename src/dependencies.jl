@@ -2,14 +2,14 @@ const LOCAL_REPO_NAME = "REPO"
 
 function get_project_deps(
     api::Forge,
-    clone_hostname::AbstractString,
+    ci::CIService,
     repo::Union{GitHub.Repo,GitLab.Project};
     subdir::AbstractString="",
     include_jll::Bool=false,
     master_branch::Union{DefaultBranch,AbstractString}=DefaultBranch(),
 )
     mktempdir() do f
-        url_with_auth = get_url_with_auth(api, clone_hostname, repo)
+        url_with_auth = get_url_with_auth(api, ci, repo)
         local_path = joinpath(f, LOCAL_REPO_NAME)
         @mock git_clone(url_with_auth, local_path)
 

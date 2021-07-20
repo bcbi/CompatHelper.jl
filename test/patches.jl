@@ -61,7 +61,7 @@ end
 
 function make_clone_https_patch(dir::AbstractString)
     return @patch function CompatHelper.get_url_with_auth(
-        ::GitForge.Forge, ::AbstractString, ::Union{GitHub.Repo,GitLab.Project}
+        ::GitForge.Forge, ::CIService, ::Union{GitHub.Repo,GitLab.Project}
     )
         return dir
     end
@@ -69,7 +69,7 @@ end
 
 function make_clone_ssh_patch(dir::AbstractString)
     return @patch function CompatHelper.get_url_for_ssh(
-        ::GitForge.Forge, ::AbstractString, ::Union{GitHub.Repo,GitLab.Project}
+        ::GitForge.Forge, ::CIService, ::Union{GitHub.Repo,GitLab.Project}
     )
         return dir
     end

@@ -149,23 +149,23 @@ function create_new_pull_request(
 end
 
 function get_url_with_auth(
-    api::GitHub.GitHubAPI, hostname::AbstractString, repo::GitHub.Repo
+    api::GitHub.GitHubAPI, ci::GitHubActions, repo::GitHub.Repo
 )
-    return "https://x-access-token:$(api.token.token)@$(hostname)/$(repo.full_name).git"
+    return "https://x-access-token:$(api.token.token)@$(ci.clone_hostname)/$(repo.full_name).git"
 end
 
-function get_url_for_ssh(::GitHub.GitHubAPI, hostname::AbstractString, repo::GitHub.Repo)
-    return "git@$(hostname):$(repo.full_name).git"
+function get_url_for_ssh(::GitHub.GitHubAPI, ci::GitHubActions, repo::GitHub.Repo)
+    return "git@$(ci.clone_hostname):$(repo.full_name).git"
 end
 
 function get_url_with_auth(
-    api::GitLab.GitLabAPI, hostname::AbstractString, repo::GitLab.Project
+    api::GitLab.GitLabAPI, ci::GitLabCI, repo::GitLab.Project
 )
-    return "https://oauth2:$(api.token.token)@$(hostname)/$(repo.path_with_namespace).git"
+    return "https://oauth2:$(api.token.token)@$(ci.clone_hostname)/$(repo.path_with_namespace).git"
 end
 
-function get_url_for_ssh(::GitLab.GitLabAPI, hostname::AbstractString, repo::GitLab.Project)
-    return "git@$(hostname):$(repo.path_with_namespace).git"
+function get_url_for_ssh(::GitLab.GitLabAPI, ci::GitLabCI, repo::GitLab.Project)
+    return "git@$(ci.clone_hostname):$(repo.path_with_namespace).git"
 end
 
 function continue_with_pr(dep::DepInfo, bump_compat_containing_equality_specifier::Bool)
@@ -205,7 +205,6 @@ end
 
 function make_pr_for_new_version(
     forge::Forge,
-    clone_hostname::AbstractString,
     repo::Union{GitHub.Repo,GitLab.Project},
     dep::DepInfo,
     entry_type::EntryType,
@@ -252,10 +251,10 @@ function make_pr_for_new_version(
 
         if ssh_envvar
             pkey_filename = create_ssh_private_key(ssh_private_key_dir; env=env)
-            repo_git_url = @mock get_url_for_ssh(forge, clone_hostname, repo)
+            repo_git_url = @mock get_url_for_ssh(forge, ci_cfg, repo)
         else
             pkey_filename = nothing
-            repo_git_url = @mock get_url_with_auth(forge, clone_hostname, repo)
+            repo_git_url = @mock get_url_with_auth(forge, ci_cfg, repo)
         end
 
         # In a temp dir, grab the repo, make the changes, push and make a PR

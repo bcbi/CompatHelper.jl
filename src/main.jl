@@ -10,8 +10,6 @@ function main(
     entry_type::EntryType=KeepEntry(),
     registries::Vector{Pkg.RegistrySpec}=DEFAULT_REGISTRIES,
     subdirs::AbstractVector{<:AbstractString}=[""],
-    hostname_for_api::String=api_hostname(ci_cfg),
-    hostname_for_clone::String=clone_hostname(ci_cfg),
     master_branch::Union{DefaultBranch,AbstractString}=DefaultBranch(),
     bump_compat_containing_equality_specifier=true,
     pr_title_prefix::String="",
@@ -19,12 +17,12 @@ function main(
     unsub_from_prs=false,
     cc_user=false,
 )
-    api, repo = get_api_and_repo(ci_cfg, hostname_for_api)
+    api, repo = get_api_and_repo(ci_cfg)
 
     for subdir in subdirs
         deps = @mock get_project_deps(
             api,
-            hostname_for_clone,
+            ci_cfg,
             repo;
             subdir=subdir,
             include_jll=include_jll,
@@ -35,7 +33,6 @@ function main(
         for dep in deps
             @mock make_pr_for_new_version(
                 api,
-                hostname_for_clone,
                 repo,
                 dep,
                 entry_type,

@@ -156,12 +156,8 @@ end
     end
 
     ci_cfg = CompatHelper.auto_detect_ci_service(; env=env)
-
-    api_hostname = CompatHelper.api_hostname(ci_cfg)
-    api, repo = CompatHelper.get_api_and_repo(ci_cfg, api_hostname; env=env)
-
-    clone_hostname = CompatHelper.clone_hostname(ci_cfg)
-    url = CompatHelper.get_url_with_auth(api, clone_hostname, repo)
+    api, repo = CompatHelper.get_api_and_repo(ci_cfg; env=env)
+    url = CompatHelper.get_url_with_auth(api, ci_cfg, repo)
 
     run_integration_tests(url, env, ci_cfg)
 end

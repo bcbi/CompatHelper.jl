@@ -3,29 +3,34 @@ abstract type CIService end
 struct GitHubActions <: CIService
     username::String
     email::String
+    api_hostname::String
+    clone_hostname::String
 
-    function GitHubActions(
+    function GitHubActions(;
         username="github-actions[bot]",
         email="41898282+github-actions[bot]@users.noreply.github.com",
+        api_hostname="https://api.github.com",
+        clone_hostname="github.com"
     )
-        return new(username, email)
+        return new(username, email, api_hostname, clone_hostname)
     end
 end
 
 struct GitLabCI <: CIService
     username::String
     email::String
+    api_hostname::String
+    clone_hostname::String
 
-    function GitLabCI(username="gitlab-ci[bot]", email="gitlab-ci[bot]@gitlab.com")
-        return new(username, email)
+    function GitLabCI(;
+        username="gitlab-ci[bot]",
+        email="gitlab-ci[bot]@gitlab.com",
+        api_hostname="https://gitlab.com/api/v4",
+        clone_hostname="gitlab.com"
+    )
+        return new(username, email, api_hostname, clone_hostname)
     end
 end
-
-api_hostname(::GitHubActions) = "https://api.github.com"
-api_hostname(::GitLabCI) = "https://gitlab.com/api/v4"
-
-clone_hostname(::GitHubActions) = "github.com"
-clone_hostname(::GitLabCI) = "gitlab.com"
 
 ci_repository(::GitHubActions, env::AbstractDict=ENV) = env["GITHUB_REPOSITORY"]
 ci_repository(::GitLabCI, env::AbstractDict=ENV) = env["CI_PROJECT_PATH"]
@@ -33,21 +38,21 @@ ci_repository(::GitLabCI, env::AbstractDict=ENV) = env["CI_PROJECT_PATH"]
 ci_token(::GitHubActions, env::AbstractDict=ENV) = env["GITHUB_TOKEN"]
 ci_token(::GitLabCI, env::AbstractDict=ENV) = env["GITLAB_TOKEN"]
 
-function get_api_and_repo(ci::GitHubActions, hostname_for_api::AbstractString; env=ENV)
+function get_api_and_repo(ci::GitHubActions; env=ENV)
     token = GitHub.Token(ci_token(ci, env))
-    api = GitHub.GitHubAPI(; token=token, url=hostname_for_api)
+    api = GitHub.GitHubAPI(; token=token, url=ci.api_hostname)
     repo, _ = @mock GitForge.get_repo(api, ci_repository(ci, env))
     return api, repo
 end
 
-function get_api_and_repo(ci::GitLabCI, hostname_for_api::AbstractString; env=ENV)
+function get_api_and_repo(ci::GitLabCI; env=ENV)
     token = GitLab.PersonalAccessToken(ci_token(ci, env))
-    api = GitLab.GitLabAPI(; token=token, url=hostname_for_api)
+    api = GitLab.GitLabAPI(; token=token, url=ci.api_hostname)
     repo, _ = @mock GitForge.get_repo(api, ci_repository(ci, env))
     return api, repo
 end
 
-function get_api_and_repo(ci::Any, hostname_for_api::AbstractString)
+function get_api_and_repo(ci::Any)
     err = "Unknown CI Config: $(typeof(ci))"
     @error(err)
     return throw(ErrorException(err))

@@ -2,6 +2,10 @@ keep_entry = CompatHelper.KeepEntry()
 drop_entry = CompatHelper.DropEntry()
 new_entry = CompatHelper.NewEntry()
 
+hostname = "hostname"
+github = GitHubActions(; clone_hostname=hostname)
+gitlab = GitLabCI(; clone_hostname=hostname)
+
 @testset "body_info -- $(entry)" for (entry, expected) in [
     (keep_entry, "keeps"), (drop_entry, "drops"), (new_entry, " brand new")
 ]
@@ -156,7 +160,7 @@ end
     @testset "GitHub" begin
         result = CompatHelper.get_url_with_auth(
             GitHub.GitHubAPI(; token=GitHub.Token("token")),
-            "hostname",
+            github,
             GitHub.Repo(; full_name="full_name"),
         )
 
@@ -166,7 +170,7 @@ end
     @testset "GitLab" begin
         result = CompatHelper.get_url_with_auth(
             GitLab.GitLabAPI(; token=GitLab.OAuth2Token("token")),
-            "hostname",
+            gitlab,
             GitLab.Project(; path_with_namespace="full_name"),
         )
 
@@ -177,7 +181,7 @@ end
 @testset "get_url_for_ssh" begin
     @testset "GitHub" begin
         result = CompatHelper.get_url_for_ssh(
-            GitHub.GitHubAPI(), "hostname", GitHub.Repo(; full_name="full_name")
+            GitHub.GitHubAPI(), github, GitHub.Repo(; full_name="full_name")
         )
 
         @test result == "git@hostname:full_name.git"
@@ -186,7 +190,7 @@ end
     @testset "GitLab" begin
         result = CompatHelper.get_url_for_ssh(
             GitLab.GitLabAPI(),
-            "hostname",
+            gitlab,
             GitLab.Project(; path_with_namespace="full_name"),
         )
 
@@ -318,7 +322,6 @@ end
         @test isnothing(
             CompatHelper.make_pr_for_new_version(
                 GitHub.GitHubAPI(),
-                "hostname",
                 GitHub.Repo(),
                 CompatHelper.DepInfo(CompatHelper.Package("PackageA", UUID(1))),
                 CompatHelper.KeepEntry(),
@@ -332,7 +335,6 @@ end
             @test isnothing(
                 CompatHelper.make_pr_for_new_version(
                     GitHub.GitHubAPI(; token=GitHub.Token("token")),
-                    "hostname",
                     GitHub.Repo(),
                     CompatHelper.DepInfo(
                         CompatHelper.Package("PackageA", UUID(1));
@@ -380,7 +382,6 @@ end
 
                     CompatHelper.make_pr_for_new_version(
                         GitHub.GitHubAPI(; token=GitHub.Token("token")),
-                        "hostname",
                         GitHub.Repo(;
                             owner=GitHub.User(; login="username"), name="PackageB"
                         ),
@@ -397,7 +398,6 @@ end
                     withenv(CompatHelper.PRIVATE_SSH_ENVVAR => "foo") do
                         CompatHelper.make_pr_for_new_version(
                             GitHub.GitHubAPI(; token=GitHub.Token("token")),
-                            "hostname",
                             GitHub.Repo(;
                                 owner=GitHub.User(; login="username"), name="PackageC"
                             ),

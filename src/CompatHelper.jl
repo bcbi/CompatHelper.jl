@@ -11,6 +11,7 @@ using TOML: TOML
 using UUIDs: UUIDs, UUID
 
 export DropEntry, KeepEntry, NewEntry
+export CIService, GitHubActions, GitLabCI
 
 @static if Base.VERSION >= v"1.7-"
     const VersionSpec = Pkg.Versions.VersionSpec
