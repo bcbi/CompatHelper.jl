@@ -1,3 +1,7 @@
+title_parenthetical(::KeepEntry) = " (keep existing compat)"
+title_parenthetical(::DropEntry) = " (drop existing compat)"
+title_parenthetical(::NewEntry) = ""
+
 function body_info(::KeepEntry, name::AbstractString)
     return "This keeps the compat entries for earlier versions.\n\n"
 end
@@ -7,10 +11,6 @@ end
 function body_info(::NewEntry, name::AbstractString)
     return "This is a brand new compat entry. Previously, you did not have a compat entry for the `$(name)` package.\n\n"
 end
-
-title_parenthetical(::KeepEntry) = " (keep existing compat)"
-title_parenthetical(::DropEntry) = " (drop existing compat)"
-title_parenthetical(::NewEntry) = ""
 
 function new_compat_entry(
     ::KeepEntry, old_compat::AbstractString, new_compat::AbstractString

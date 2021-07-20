@@ -42,6 +42,7 @@ function get_api_and_repo(ci::GitHubActions; env=ENV)
     token = GitHub.Token(ci_token(ci, env))
     api = GitHub.GitHubAPI(; token=token, url=ci.api_hostname)
     repo, _ = @mock GitForge.get_repo(api, ci_repository(ci, env))
+
     return api, repo
 end
 
@@ -49,6 +50,7 @@ function get_api_and_repo(ci::GitLabCI; env=ENV)
     token = GitLab.PersonalAccessToken(ci_token(ci, env))
     api = GitLab.GitLabAPI(; token=token, url=ci.api_hostname)
     repo, _ = @mock GitForge.get_repo(api, ci_repository(ci, env))
+
     return api, repo
 end
 

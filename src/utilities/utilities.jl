@@ -1,8 +1,13 @@
+lower(str::AbstractString) = lowercase(strip(str))
+
 function has_ssh_private_key(; env::AbstractDict=ENV)
     return haskey(env, PRIVATE_SSH_ENVVAR) && env[PRIVATE_SSH_ENVVAR] != "false"
 end
 
-lower(str::AbstractString) = lowercase(strip(str))
+function api_retry(f::Function)
+    delays = ExponentialBackOff(; n=10, max_delay=30.0)
+    return retry(f; delays)()
+end
 
 function _max(x::Union{Nothing,Any}, y)
     if x === nothing

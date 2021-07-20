@@ -1,6 +1,9 @@
 const COMPATHELPER_GIT_COMMITTER_NAME = "CompatHelper Julia"
 const COMPATHELPER_GIT_COMMITTER_EMAIL = "compathelper_noreply@julialang.org"
 
+git_add() = run(`git add -A .`)
+git_checkout(branch::AbstractString) = run(`git checkout $branch`)
+
 function get_git_name_and_email(; env=ENV)
     name = if haskey(env, "GIT_COMMITTER_NAME")
         env["GIT_COMMITTER_NAME"]
@@ -15,14 +18,6 @@ function get_git_name_and_email(; env=ENV)
     end
 
     return name, email
-end
-
-git_checkout(branch::AbstractString) = run(`git checkout $branch`)
-
-function git_add()
-    run(`git add -A .`)
-
-    return nothing
 end
 
 function git_push(
@@ -42,6 +37,7 @@ function git_push(
             `git -c user.name="$name" -c user.email="$email" -c committer.name="$name" -c committer.email="$email" push $force_flag $remote $branch`,
         )
     end
+
     return nothing
 end
 
@@ -83,7 +79,4 @@ end
 function git_get_master_branch(master_branch::DefaultBranch)
     return string(strip(read(`git rev-parse --abbrev-ref HEAD`, String)))
 end
-
-function git_get_master_branch(master_branch::AbstractString)
-    return master_branch
-end
+git_get_master_branch(master_branch::AbstractString) = master_branch
