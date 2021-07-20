@@ -3,7 +3,7 @@
         apply([git_clone_patch, project_toml_patch, cd_patch]) do
             deps = CompatHelper.get_project_deps(
                 GitForge.GitHub.GitHubAPI(; token=GitHub.Token("token")),
-                "",
+                GitHubActions(),
                 GitHub.Repo(; full_name="foobar"),
             )
 
@@ -15,7 +15,7 @@
         apply([git_clone_patch, project_toml_patch, cd_patch]) do
             deps = CompatHelper.get_project_deps(
                 GitForge.GitHub.GitHubAPI(; token=GitHub.Token("token")),
-                "",
+                GitHubActions(),
                 GitHub.Repo(; full_name="foobar");
                 include_jll=true,
             )
